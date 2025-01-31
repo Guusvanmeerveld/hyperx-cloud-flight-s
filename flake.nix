@@ -36,6 +36,10 @@
           buildInputs = runtimeDeps;
 
           src = ./.;
+
+          postInstall = ''
+            install -Dm444 -t "$out/lib/udev/rules.d" *.rules
+          '';
         };
 
         devShell = pkgs.mkShell rec {
