@@ -31,17 +31,18 @@
           pkg-config
         ];
       in {
-        defaultPackage = naersk-lib.buildPackage {
-          nativeBuildInputs = buildDeps;
-          buildInputs = runtimeDeps;
+        packages = {
+          default = naersk-lib.buildPackage {
+            nativeBuildInputs = buildDeps;
+            buildInputs = runtimeDeps;
 
-          src = ./.;
+            src = ./.;
 
-          postInstall = ''
-            install -Dm444 -t "$out/lib/udev/rules.d" *.rules
-          '';
+            postInstall = ''
+              install -Dm444 -t "$out/lib/udev/rules.d" *.rules
+            '';
+          };
         };
-
         devShell = pkgs.mkShell rec {
           nativeBuildInputs = buildDeps;
 
