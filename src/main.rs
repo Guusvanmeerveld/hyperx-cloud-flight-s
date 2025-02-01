@@ -1,5 +1,7 @@
 use clap::Command;
 
+use clokwerk::{Scheduler, TimeUnits};
+use cloud_flight::Event;
 use simple_logger::SimpleLogger;
 
 use std::sync::Arc;
@@ -25,6 +27,13 @@ fn main() {
         Some(("daemon", _)) => {
             let cf = Arc::new(cloud_flight::CloudFlight::new());
 
+            let mut scheduler = Scheduler::new();
+
+            let s_cf = cf.clone();
+            scheduler.every(1.minutes()).run(move || {
+                s_cf.request_battery();
+            });
+
             cf.request_battery();
             cf.read();
 
@@ -35,11 +44,17 @@ fn main() {
             cf.read();
 
             loop {
-                let _ = cf.read();
+                scheduler.run_pending();
 
-                let json = serde_json::to_string(&cf.check_status()).unwrap();
+                match cf.read() {
+                    Event::Ignored => {}
 
-                println!("{}", json)
+                    _ => {
+                        let json = serde_json::to_string(&cf.check_status()).unwrap();
+
+                        println!("{}", json)
+                    }
+                };
             }
         }
         _ => unreachable!(),
