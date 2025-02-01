@@ -1,5 +1,5 @@
 [package]
-name = "cloud-flight"
+name = "hcfs"
 version = "0.1.5"
 edition = "2018"
 
