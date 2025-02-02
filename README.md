@@ -1,70 +1,58 @@
-# HyperX Cloud Flight Battery Monitoring
+# HyperX Cloud Flight S CLI
 
 ## Introduction
 
-Simple tray application which shows battery level for <em>[HyperX Cloud Flight Wireless Headset.](https://www.hyperxgaming.com/unitedstates/us/headsets/cloud-flight-wireless-gaming-headset)</em>
+This is a simple Rust CLI application that interfaces with the HyperX Cloud Flight S headset using the HidAPI. I forked this repository since the original repositories did not satisfy my needs (running with Waybar) or did not support my specific model of headset. Feel free to further fork this repository or create pull requests if you see fit.
 
-## Screenshots
+## Installation
 
-<p align="center">
-    <img width="200" alt="HyperX Cloud Flight" src="./images/screenshot.png">
-    <img width="200" alt="HyperX Cloud Flight" src="./images/screenshot_2.png">
-</p>
+### Using Nix
 
-## Getting Started
+#### With flakes
 
+Add the following into the desired flake.nix file.
 
-### Prerequisites
-
-#### hidraw
-
-Make sure you have hidraw installed on your system.
-
-- Debian/Ubuntu
-
-```
-sudo apt install libhidapi-hidraw0
+```nix
+{
+    inputs.hyperx-cloud-flight-s.url = "github:guusvanmeerveld/hyperx-cloud-flight-s";
+}
 ```
 
-- Arch
+#### Add the overlay
 
+```nix
+ {
+    config = {
+      nixpkgs = {
+        overlays = [
+            (final: _prev: {
+                hyperx-cloud-flight-s = inputs.hyperx-cloud-flight-s.packages."${final.system}".default;
+            })
+        ];
+      };
+    };
+  }
 ```
-sudo pacman -S hidapi
-```
 
-#### udev
+#### Add the package
 
-Create new file in `/etc/udev/rules.d/99-hyperx-cloud-flight.rules` and place the following content:
-
-```
-KERNEL=="hidraw*", ATTRS{idVendor}=="0951", ATTRS{idProduct}=="16c4", MODE="0666"
-KERNEL=="hidraw*", ATTRS{idVendor}=="0951", ATTRS{idProduct}=="1723", MODE="0666"
-```
-
-Once created replug the wireless dongle.
-
-### Installation
-
-Download the latest binary from the releases and run it.
-
-```console
-foo@bar:~$ curl -LO https://github.com/kondinskis/hyperx-cloud-flight/releases/download/0.1.5/cloud-flight_amd64
-foo@bar:~$ chmod +x cloud-flight_amd64
-foo@bar:~$ ./cloud-flight_amd64
+```nix
+{
+    environment.systemPackages = [pkgs.hyperx-cloud-flight-s];
+    # Needed to allow users to interact with the headset.
+    services.udev.packages = [pkgs.hyperx-cloud-flight-s];
+}
 ```
 
 ### Supported operating systems
 
-- Linux 
-
-## Help
-
-Feel free to [report any issues](https://github.com/kondinskis/hyperx-cloud-flight/issues) you may have while using this application.
+- Nix
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/kondinskis/hyperx-cloud-flight/blob/main/LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](/LICENSE.md) file for details
 
 ## Other Projects
 
-* [hyperx-cloud-flight-wireless](https://github.com/srn/hyperx-cloud-flight-wireless) Module for interfacing with HyperX Cloud Flight Wireless
+- [hyperx-cloud-flight-s](https://github.com/Mitnitsky/hyperx-cloud-flight-s) Module for interfacing with HyperX Cloud Flight S.
+- [hyperx-cloud-flight](https://github.com/Mitnitsky/hyperx-cloud-flight) Module for interfacing with HyperX Cloud Flight series of headsets.
