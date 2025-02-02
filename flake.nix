@@ -1,8 +1,11 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
+
     naersk.url = "github:nix-community/naersk/master";
     rust-overlay.url = "github:oxalica/rust-overlay";
+
     utils.url = "github:numtide/flake-utils";
   };
 
